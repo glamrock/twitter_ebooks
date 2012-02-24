@@ -27,12 +27,14 @@ class Generator:
         self.model = nltk.Text(words)
 
     def raw_words(self, length=100):
-        if not hasattr(self, '_trigram_model'):
+        """Generates a list of words using an NLTK NgramModel."""
+        if not hasattr(self, '_ngram_model'):
             estimator = lambda fdist, bins: LidstoneProbDist(fdist, 0.2)
-            self._trigram_model = NgramModel(2, self.model, estimator)
-        return self._trigram_model.generate(length, [random.choice(self.words)])[1:]
+            self._ngram_model = NgramModel(2, self.model, estimator)
+        return self._ngram_model.generate(length, [random.choice(self.words)])[1:]
 
     def smart_trim(self, genwords):
+        """Trims to tweet-size while attempting to respect sentence boundaries."""
         new_words = genwords[:]
 
         # Cleverly trim to tweet size
@@ -51,11 +53,10 @@ class Generator:
             if i == 0  or re.search(stoppers, new_words[i-1][-1]):
                 new_words[i] = word.capitalize()
 
-
-
         return new_words
 
     def tweetworthy(self):
+        """Generate some tweetable text."""
         capitalize = self.settings['capitalize'] if self.settings.has_key('capitalize') else False
         genwords = self.raw_words()
 

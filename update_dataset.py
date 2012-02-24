@@ -9,6 +9,7 @@ import codecs
 from traceback import print_exc
 
 def update_dataset(username):
+    """Fetches as many tweets as possible for the given user since the last one we received."""
     username = username.replace('@', '')
     print "Retrieving tweets from @%s" % username
     topdir = os.path.dirname(os.path.realpath(__file__))
