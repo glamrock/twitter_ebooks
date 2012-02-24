@@ -1,0 +1,7 @@
+user: "@scanlan_ebooks"
+target_user: "@JackLScanlan"
+auth:
+  consumer_key:
+  consumer_secret:
+  access_token_key:
+  access_token_secret:
