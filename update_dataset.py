@@ -8,19 +8,33 @@ import time
 import codecs
 from traceback import print_exc
 
-if __name__ == '__main__':
+def update_dataset(username):
+    username = username.replace('@', '')
+    print "Retrieving tweets from @%s" % username
     topdir = os.path.dirname(os.path.realpath(__file__))
     settings = yaml.load(open(os.path.join(topdir, 'settings.yml')))
-    api = twitter.Api(**settings['auth'])
 
-    try: since_id = open(os.path.join(topdir, '.last_tweet_id'), 'r').read()
+    auth = None
+    for sett in settings.itervalues():
+        if sett['target'].replace('@','') == username:
+            auth = sett['auth']
+
+
+    api = twitter.Api(**auth)
+
+    userdir = os.path.join(topdir, 'users', username)
+    if not os.path.exists(userdir):
+        os.makedirs(userdir)
+
+    lti_path = os.path.join(userdir, 'last_tweet_id')
+    try: since_id = open(lti_path, 'r').read()
     except IOError: since_id = None
 
     page = 1
     statuses = []
     while True:
         try:
-            new = api.GetUserTimeline(settings['target_user'], since_id=since_id, count=200,
+            new = api.GetUserTimeline(username, since_id=since_id, count=200,
                                       include_rts=False, page=page)
             if len(new) == 0: break
             statuses += new
@@ -33,11 +47,11 @@ if __name__ == '__main__':
 
     if len(statuses) == 0:
         print "No new tweets."
-        sys.exit()
+        return
 
-    texts = [s.text for s in statuses]
+    texts = [s.text.replace("\n", " ") for s in statuses]
 
-    datafile_path = os.path.join(topdir, settings['target_user'].replace('@', '') + '.tweets')
+    datafile_path = os.path.join(userdir, 'tweets')
 
     try:
         datafile = codecs.open(datafile_path, encoding='utf-8', mode='r')
@@ -47,6 +61,12 @@ if __name__ == '__main__':
 
     datafile = codecs.open(datafile_path, encoding='utf-8', mode='w')
     datafile.write("\n".join(texts))
-    ltf = open(os.path.join(topdir, '.last_tweet_id'), 'w')
+    ltf = open(os.path.join(userdir, 'last_tweet_id'), 'w')
     ltf.write(str(statuses[0].id))
 
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print "Usage: %s @target_account" % sys.argv[0]
+        sys.exit()
+    update_dataset(sys.argv[1])
