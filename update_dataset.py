@@ -40,12 +40,13 @@ if __name__ == '__main__':
     datafile_path = os.path.join(topdir, settings['target_user'].replace('@', '') + '.tweets')
 
     try:
-        datafile = codecs.open(datafile_path, encoding='utf-8', mode='rw')
-        old = datafile.read()
-        datafile.write("\n".join(texts + [old]))
+        datafile = codecs.open(datafile_path, encoding='utf-8', mode='r')
+		texts.append(datafile.read())
     except IOError:
-        datafile = codecs.open(datafile_path, encoding='utf-8', mode='w')
-        datafile.write("\n".join(texts))
+	  pass
+
+	datafile = codecs.open(datafile_path, encoding='utf-8', mode='w')
+	datafile.write("\n".join(texts))
     ltf = open(os.path.join(topdir, '.last_tweet_id'), 'w')
     ltf.write(str(statuses[0].id))
 
