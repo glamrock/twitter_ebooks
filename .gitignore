@@ -1,3 +1,4 @@
 settings.yml
 .*.swp
 *.tweets
+.last_tweet_id
