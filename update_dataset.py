@@ -41,12 +41,12 @@ if __name__ == '__main__':
 
     try:
         datafile = codecs.open(datafile_path, encoding='utf-8', mode='r')
-		texts.append(datafile.read())
+        texts.append(datafile.read())
     except IOError:
-	  pass
+      pass
 
-	datafile = codecs.open(datafile_path, encoding='utf-8', mode='w')
-	datafile.write("\n".join(texts))
+    datafile = codecs.open(datafile_path, encoding='utf-8', mode='w')
+    datafile.write("\n".join(texts))
     ltf = open(os.path.join(topdir, '.last_tweet_id'), 'w')
     ltf.write(str(statuses[0].id))
 
